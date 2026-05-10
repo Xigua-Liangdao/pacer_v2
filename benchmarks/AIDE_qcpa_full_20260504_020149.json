@@ -1,0 +1,174 @@
+{
+  "git_commit": "73e8eaa22db3d30b5e64a5d1c72e68b3b37ae2eb",
+  "config": {
+    "method": "clip_supervised_text_image_emotion",
+    "task": "emotion",
+    "split": {
+      "train": 0.65,
+      "val": 0.15,
+      "test": 0.2
+    },
+    "model_id": "openai/clip-vit-base-patch32",
+    "prompt_template": "structured_qcpa_9",
+    "prompt_set": "structured_9",
+    "prompt_group_ids": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2
+    ],
+    "epochs": 40,
+    "batch_size": 32,
+    "lr": 0.00015,
+    "weight_decay": 0.0005,
+    "max_grad_norm": 1.0,
+    "num_frames": 5,
+    "feature_layout": "pooled",
+    "adapter_hidden_dim": 1024,
+    "adapter_dropout": 0.2,
+    "temporal_head": "none",
+    "temporal_num_heads": 4,
+    "temporal_num_layers": 2,
+    "temporal_pool_mode": "cls",
+    "use_class_weight": true,
+    "label_smoothing": 0.03,
+    "select_metric": "weighted_f1",
+    "use_test_ensemble": true,
+    "ensemble_group_size": 2,
+    "strict_frozen_clip": true,
+    "use_prompt_weight": true,
+    "use_class_temperature": true,
+    "use_class_bias": true,
+    "attention_scope": "local",
+    "dual_stage": false,
+    "use_residual_gate": true,
+    "use_mahalanobis_temp": true,
+    "use_lowrank_bias": true,
+    "bias_rank": 16,
+    "dump_attn": false,
+    "feature_cache_dir": "/data1/yanjing/talk2bev/aide_clip/cache/features",
+    "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/qcpa_eval/AIDE_qcpa_full_20260504_020149.ckpt.pt",
+    "seed": 42,
+    "training_seed": 42,
+    "max_sequences": 0,
+    "use_causal_contrastive": false,
+    "ccl_weight": 0.5,
+    "ccl_temperature": 0.5,
+    "use_causal_alignment": false,
+    "cfa_weight": 0.1,
+    "use_counterfactual_aug": false,
+    "cda_prob": 0.3,
+    "cda_n_replace_max": 3,
+    "causal_group_source": "scene_vehicle",
+    "use_cda_v2_mixstyle": false,
+    "cda_v2_prob": 0.5,
+    "cda_v2_kl_weight": 0.5,
+    "use_ccl_v2_counterfactual": false,
+    "ccl_v2_weight": 0.1,
+    "ccl_v2_temperature": 0.1,
+    "use_cfa_v2_textanchor": false,
+    "cfa_v2_weight": 0.05,
+    "cfa_v2_anchor_weight": 1.0,
+    "cfa_v2_ema_momentum": 0.99
+  },
+  "dataset": {
+    "total": 2898,
+    "train": 1882,
+    "val": 433,
+    "test": 583,
+    "label_distribution_train": {
+      "Peace": 1122,
+      "Happiness": 155,
+      "Anxiety": 258,
+      "Weariness": 208,
+      "Anger": 139
+    }
+  },
+  "val": {
+    "accuracy": 0.773672,
+    "weighted_f1": 0.771763,
+    "confusion_matrix": {
+      "Anxiety": {
+        "Anxiety": 36,
+        "Peace": 18,
+        "Weariness": 2,
+        "Happiness": 1,
+        "Anger": 2
+      },
+      "Peace": {
+        "Anxiety": 10,
+        "Peace": 222,
+        "Weariness": 4,
+        "Happiness": 9,
+        "Anger": 14
+      },
+      "Weariness": {
+        "Anxiety": 0,
+        "Peace": 5,
+        "Weariness": 41,
+        "Happiness": 0,
+        "Anger": 2
+      },
+      "Happiness": {
+        "Anxiety": 0,
+        "Peace": 12,
+        "Weariness": 1,
+        "Happiness": 22,
+        "Anger": 0
+      },
+      "Anger": {
+        "Anxiety": 4,
+        "Peace": 10,
+        "Weariness": 1,
+        "Happiness": 3,
+        "Anger": 14
+      }
+    }
+  },
+  "test": {
+    "accuracy": 0.795883,
+    "weighted_f1": 0.790728,
+    "confusion_matrix": {
+      "Anxiety": {
+        "Anxiety": 51,
+        "Peace": 23,
+        "Weariness": 1,
+        "Happiness": 3,
+        "Anger": 3
+      },
+      "Peace": {
+        "Anxiety": 12,
+        "Peace": 308,
+        "Weariness": 6,
+        "Happiness": 14,
+        "Anger": 6
+      },
+      "Weariness": {
+        "Anxiety": 0,
+        "Peace": 11,
+        "Weariness": 51,
+        "Happiness": 1,
+        "Anger": 1
+      },
+      "Happiness": {
+        "Anxiety": 0,
+        "Peace": 10,
+        "Weariness": 3,
+        "Happiness": 35,
+        "Anger": 1
+      },
+      "Anger": {
+        "Anxiety": 4,
+        "Peace": 18,
+        "Weariness": 1,
+        "Happiness": 1,
+        "Anger": 19
+      }
+    }
+  }
+}

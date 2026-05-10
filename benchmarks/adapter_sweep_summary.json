@@ -1,0 +1,94 @@
+{
+  "reference": {
+    "name": "h1024_d02",
+    "acc": 0.792453,
+    "wf1": 0.786975,
+    "adapter_hidden_dim": 1024,
+    "adapter_dropout": 0.2,
+    "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/adapter_sweep/h1024_d02.ckpt.pt",
+    "delta_acc_vs_h1024_d02": 0.0,
+    "delta_wf1_vs_h1024_d02": 0.0
+  },
+  "results": [
+    {
+      "name": "h2048_d02",
+      "acc": 0.802744,
+      "wf1": 0.798728,
+      "adapter_hidden_dim": 2048,
+      "adapter_dropout": 0.2,
+      "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/adapter_sweep/h2048_d02.ckpt.pt",
+      "delta_acc_vs_h1024_d02": 0.010291,
+      "delta_wf1_vs_h1024_d02": 0.011753
+    },
+    {
+      "name": "h1536_d02",
+      "acc": 0.797599,
+      "wf1": 0.795475,
+      "adapter_hidden_dim": 1536,
+      "adapter_dropout": 0.2,
+      "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/adapter_sweep/h1536_d02.ckpt.pt",
+      "delta_acc_vs_h1024_d02": 0.005146,
+      "delta_wf1_vs_h1024_d02": 0.0085
+    },
+    {
+      "name": "h768_d01",
+      "acc": 0.801029,
+      "wf1": 0.794626,
+      "adapter_hidden_dim": 768,
+      "adapter_dropout": 0.1,
+      "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/adapter_sweep/h768_d01.ckpt.pt",
+      "delta_acc_vs_h1024_d02": 0.008576,
+      "delta_wf1_vs_h1024_d02": 0.007651
+    },
+    {
+      "name": "h1024_d02",
+      "acc": 0.792453,
+      "wf1": 0.786975,
+      "adapter_hidden_dim": 1024,
+      "adapter_dropout": 0.2,
+      "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/adapter_sweep/h1024_d02.ckpt.pt",
+      "delta_acc_vs_h1024_d02": 0.0,
+      "delta_wf1_vs_h1024_d02": 0.0
+    },
+    {
+      "name": "h1024_d01",
+      "acc": 0.780446,
+      "wf1": 0.77673,
+      "adapter_hidden_dim": 1024,
+      "adapter_dropout": 0.1,
+      "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/adapter_sweep/h1024_d01.ckpt.pt",
+      "delta_acc_vs_h1024_d02": -0.012007,
+      "delta_wf1_vs_h1024_d02": -0.010245
+    },
+    {
+      "name": "h512_d02",
+      "acc": 0.768439,
+      "wf1": 0.764775,
+      "adapter_hidden_dim": 512,
+      "adapter_dropout": 0.2,
+      "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/adapter_sweep/h512_d02.ckpt.pt",
+      "delta_acc_vs_h1024_d02": -0.024014,
+      "delta_wf1_vs_h1024_d02": -0.0222
+    },
+    {
+      "name": "h1024_d03",
+      "acc": 0.753002,
+      "wf1": 0.757953,
+      "adapter_hidden_dim": 1024,
+      "adapter_dropout": 0.3,
+      "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/adapter_sweep/h1024_d03.ckpt.pt",
+      "delta_acc_vs_h1024_d02": -0.039451,
+      "delta_wf1_vs_h1024_d02": -0.029022
+    },
+    {
+      "name": "h768_d02",
+      "acc": 0.744425,
+      "wf1": 0.749979,
+      "adapter_hidden_dim": 768,
+      "adapter_dropout": 0.2,
+      "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/adapter_sweep/h768_d02.ckpt.pt",
+      "delta_acc_vs_h1024_d02": -0.048028,
+      "delta_wf1_vs_h1024_d02": -0.036996
+    }
+  ]
+}

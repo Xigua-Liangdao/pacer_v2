@@ -1,0 +1,135 @@
+{
+  "config": {
+    "method": "clip_supervised_text_image_emotion",
+    "task": "emotion",
+    "split": {
+      "train": 0.65,
+      "val": 0.15,
+      "test": 0.2
+    },
+    "model_id": "openai/clip-vit-base-patch32",
+    "prompt_template": "Driver is <LABEL>.",
+    "prompt_set": "driving_7",
+    "epochs": 40,
+    "batch_size": 32,
+    "lr": 0.00015,
+    "weight_decay": 0.0005,
+    "max_grad_norm": 1.0,
+    "num_frames": 5,
+    "feature_layout": "sequence",
+    "adapter_hidden_dim": 1024,
+    "adapter_dropout": 0.2,
+    "temporal_head": "transformer",
+    "temporal_num_heads": 4,
+    "temporal_num_layers": 2,
+    "temporal_pool_mode": "cls",
+    "use_class_weight": true,
+    "label_smoothing": 0.03,
+    "select_metric": "weighted_f1",
+    "use_test_ensemble": true,
+    "ensemble_group_size": 2,
+    "strict_frozen_clip": true,
+    "use_prompt_weight": true,
+    "use_class_temperature": true,
+    "use_class_bias": true,
+    "feature_cache_dir": "/data1/yanjing/talk2bev/aide_clip/cache/features",
+    "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/repro/clip_emotion_strict_repro_c_transformer_try_v2.ckpt.pt",
+    "seed": 42,
+    "max_sequences": 0
+  },
+  "dataset": {
+    "total": 2898,
+    "train": 1882,
+    "val": 433,
+    "test": 583,
+    "label_distribution_train": {
+      "Peace": 1122,
+      "Happiness": 155,
+      "Anxiety": 258,
+      "Weariness": 208,
+      "Anger": 139
+    }
+  },
+  "val": {
+    "accuracy": 0.538106,
+    "weighted_f1": 0.532713,
+    "confusion_matrix": {
+      "Anxiety": {
+        "Anxiety": 0,
+        "Peace": 23,
+        "Weariness": 7,
+        "Happiness": 7,
+        "Anger": 22
+      },
+      "Peace": {
+        "Anxiety": 0,
+        "Peace": 151,
+        "Weariness": 26,
+        "Happiness": 19,
+        "Anger": 63
+      },
+      "Weariness": {
+        "Anxiety": 0,
+        "Peace": 6,
+        "Weariness": 42,
+        "Happiness": 0,
+        "Anger": 0
+      },
+      "Happiness": {
+        "Anxiety": 0,
+        "Peace": 6,
+        "Weariness": 1,
+        "Happiness": 19,
+        "Anger": 9
+      },
+      "Anger": {
+        "Anxiety": 0,
+        "Peace": 6,
+        "Weariness": 1,
+        "Happiness": 4,
+        "Anger": 21
+      }
+    }
+  },
+  "test": {
+    "accuracy": 0.51458,
+    "weighted_f1": 0.514948,
+    "confusion_matrix": {
+      "Anxiety": {
+        "Anxiety": 0,
+        "Peace": 31,
+        "Weariness": 14,
+        "Happiness": 4,
+        "Anger": 32
+      },
+      "Peace": {
+        "Anxiety": 0,
+        "Peace": 192,
+        "Weariness": 34,
+        "Happiness": 22,
+        "Anger": 98
+      },
+      "Weariness": {
+        "Anxiety": 0,
+        "Peace": 6,
+        "Weariness": 53,
+        "Happiness": 2,
+        "Anger": 3
+      },
+      "Happiness": {
+        "Anxiety": 0,
+        "Peace": 7,
+        "Weariness": 4,
+        "Happiness": 31,
+        "Anger": 7
+      },
+      "Anger": {
+        "Anxiety": 0,
+        "Peace": 12,
+        "Weariness": 3,
+        "Happiness": 4,
+        "Anger": 24
+      }
+    }
+  }
+}

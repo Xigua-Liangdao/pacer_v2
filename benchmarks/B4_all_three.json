@@ -1,0 +1,357 @@
+{
+  "config": {
+    "method": "clip_supervised_text_video_drowsiness",
+    "execution_mode": "strict_frozen_clip_adapter",
+    "dataset": "YawDD",
+    "task": "drowsiness",
+    "benchmark_mode": "all_face_sequences_fixed_test",
+    "baseline_mode": "none",
+    "cv_mode": "split",
+    "fold_idx": null,
+    "train_ratio": 0.65,
+    "val_ratio": 0.15,
+    "yawdd_root": "/data1/yanjing/talk2bev/aide_clip/data/yawdd",
+    "label_mode": "binary",
+    "class_names": [
+      "notdrowsy",
+      "drowsy"
+    ],
+    "include_dash": false,
+    "class_count": 2,
+    "video_extensions": [
+      ".avi",
+      ".mkv",
+      ".mov",
+      ".mp4"
+    ],
+    "model_id": "openai/clip-vit-base-patch32",
+    "clip_mode": "offline_only",
+    "prompt_template": "The driver looks <LABEL>.",
+    "prompt_set": "yawdd_facial_cues",
+    "epochs": 40,
+    "extract_batch_size": 32,
+    "train_batch_size": 64,
+    "lr": 0.00015,
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "num_frames": 10,
+    "feature_layout": "sequence",
+    "adapter_hidden_dim": 256,
+    "adapter_dropout": 0.3,
+    "temporal_head": "transformer",
+    "temporal_num_heads": 4,
+    "temporal_num_layers": 1,
+    "temporal_pool_mode": "hybrid",
+    "use_class_weight": true,
+    "label_smoothing": 0.1,
+    "loss_type": "focal",
+    "requested_loss_type": "focal",
+    "focal_gamma": 1.0,
+    "select_metric": "weighted_f1",
+    "use_test_ensemble": false,
+    "ensemble_group_size": 2,
+    "use_amp": true,
+    "early_stopping_patience": 6,
+    "early_stopping_min_delta": 0.0001,
+    "frame_sampling_mode": "uniform",
+    "sampling_window_start": 0.4,
+    "sampling_window_end": 0.9,
+    "diff_alpha": 0.6,
+    "diff_beta": 0.4,
+    "min_gap_ratio": 0.08,
+    "score_smooth_window": 3,
+    "frame_diff_metric": "gray_l1",
+    "ref_frame_ratio": 0.1,
+    "feature_cache_dir": "/data1/yanjing/talk2bev/aide_clip/cache/yawdd_features",
+    "resolved_feature_cache_paths": {
+      "train": "/data1/yanjing/talk2bev/aide_clip/cache/yawdd_features/yawdd-binary_train_openai_clip-vit-base-patch32_f10_uniform_n179_c52b41e44adcbfc6_sequence.pt",
+      "val": "/data1/yanjing/talk2bev/aide_clip/cache/yawdd_features/yawdd-binary_val_openai_clip-vit-base-patch32_f10_uniform_n42_9861caa6dee3af5d_sequence.pt",
+      "test": "/data1/yanjing/talk2bev/aide_clip/cache/yawdd_features/yawdd-binary_test_openai_clip-vit-base-patch32_f10_uniform_n39_de0162b1ae7359d9_sequence.pt"
+    },
+    "checkpoint_output": "/data1/yanjing/talk2bev/aide_clip/results/yawdd/causal_v1/B4_all_three.ckpt.pt",
+    "log_file": "/data1/yanjing/talk2bev/aide_clip/results/yawdd/causal_v1/B4_all_three.log",
+    "seed": 7,
+    "max_sequences": 0,
+    "run_zero_shot_eval": false,
+    "eval_mode": "fixed",
+    "all_face_image": "/data1/yanjing/talk2bev/fatigue-drive-yawning-detection/extracted_face_multi4",
+    "dlib_shape_predictor": null,
+    "use_causal_contrastive": true,
+    "ccl_weight": 0.5,
+    "ccl_temperature": 0.5,
+    "use_causal_alignment": true,
+    "cfa_weight": 0.1,
+    "use_counterfactual_aug": true,
+    "cda_prob": 0.3,
+    "cda_n_replace_max": 3,
+    "multi4_oversample_labels": [],
+    "multi4_oversample_min_count": 0,
+    "multi4_oversample_mode": "noise",
+    "multi4_oversample_noise_std": 0.0,
+    "multi4_mixup_alpha": 0.4,
+    "lr_scheduler_mode": "plateau",
+    "scheduler_min_lr": 1e-06,
+    "group_kfold_inner_split_mode": "default",
+    "train_actor_count": 32
+  },
+  "dataset": {
+    "total": 260,
+    "train": 179,
+    "val": 42,
+    "test": 39,
+    "subject_count": 43,
+    "class_distribution_total": {
+      "notdrowsy": 167,
+      "drowsy": 93
+    },
+    "behavior_distribution_total": {},
+    "view_distribution_total": {
+      "face_crop": 260
+    },
+    "group_distribution_total": {
+      "train": 179,
+      "val": 42,
+      "test": 39
+    },
+    "extension_distribution_total": {
+      ".jpg": 260
+    },
+    "source_dirs": [
+      "/data1/yanjing/talk2bev/fatigue-drive-yawning-detection/extracted_face_multi4/train_face_image",
+      "/data1/yanjing/talk2bev/fatigue-drive-yawning-detection/extracted_face_multi4/test_face_image"
+    ],
+    "invalid_name_examples": [],
+    "split_summary": {
+      "mode": "all_face_sequences_fixed_test",
+      "inner_train_val_split": {
+        "mode": "split_speaker_independent",
+        "targets": {
+          "train": 179.562,
+          "val": 41.437,
+          "test": 0.0
+        },
+        "train": {
+          "sample_count": 179,
+          "actor_count": 32,
+          "actors": [
+            "10",
+            "11",
+            "12",
+            "14",
+            "15",
+            "16",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "24",
+            "26",
+            "29",
+            "3",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "35",
+            "37",
+            "38",
+            "39",
+            "4",
+            "40",
+            "41",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "class_distribution": {
+            "notdrowsy": 115,
+            "drowsy": 64
+          },
+          "extension_distribution": {
+            ".jpg": 179
+          }
+        },
+        "val": {
+          "sample_count": 42,
+          "actor_count": 5,
+          "actors": [
+            "17",
+            "25",
+            "27",
+            "28",
+            "43"
+          ],
+          "class_distribution": {
+            "notdrowsy": 28,
+            "drowsy": 14
+          },
+          "extension_distribution": {
+            ".jpg": 42
+          }
+        },
+        "test": {
+          "sample_count": 0,
+          "actor_count": 0,
+          "actors": [],
+          "class_distribution": {},
+          "extension_distribution": {}
+        }
+      },
+      "fixed_test": {
+        "sample_count": 39,
+        "subjects": 6,
+        "class_distribution": {
+          "notdrowsy": 24,
+          "drowsy": 15
+        }
+      }
+    },
+    "all_face_diagnostics": {
+      "mode": "all_face_fixed_sequences",
+      "all_face_image": "/data1/yanjing/talk2bev/fatigue-drive-yawning-detection/extracted_face_multi4",
+      "layout": "directory_sequences",
+      "train_pool_sequences": 221,
+      "fixed_test_sequences": 39,
+      "train_pool_subjects": 37,
+      "fixed_test_subjects": 6,
+      "train_pool_distribution": {
+        "notdrowsy": 143,
+        "drowsy": 78
+      },
+      "fixed_test_distribution": {
+        "notdrowsy": 24,
+        "drowsy": 15
+      }
+    },
+    "failed_samples_train": 0,
+    "failed_samples_val": 0,
+    "failed_samples_test": 0,
+    "label_distribution_train": {
+      "notdrowsy": 115,
+      "drowsy": 64
+    },
+    "label_distribution_val": {
+      "notdrowsy": 28,
+      "drowsy": 14
+    },
+    "label_distribution_test": {
+      "notdrowsy": 24,
+      "drowsy": 15
+    }
+  },
+  "label_mode": "binary",
+  "class_names": [
+    "notdrowsy",
+    "drowsy"
+  ],
+  "class_distribution": {
+    "train": {
+      "notdrowsy": 115,
+      "drowsy": 64
+    },
+    "val": {
+      "notdrowsy": 28,
+      "drowsy": 14
+    },
+    "test": {
+      "notdrowsy": 24,
+      "drowsy": 15
+    }
+  },
+  "label_map": {
+    "notdrowsy": "notdrowsy",
+    "drowsy": "drowsy"
+  },
+  "prompt_groups": [
+    [
+      "The driver looks alert, awake, and not drowsy.",
+      "The visible behavior suggests the driver is not drowsy.",
+      "This clip shows an attentive driver rather than a fatigued one.",
+      "The person appears awake, focused, and behaviorally normal.",
+      "The facial and behavioral cues indicate an alert driver."
+    ],
+    [
+      "The driver looks drowsy, fatigued, and sleepy.",
+      "The visible behavior suggests the driver is drowsy.",
+      "This clip shows a fatigued driver rather than an alert one.",
+      "The person appears sleepy with behavioral cues of drowsiness.",
+      "The facial and behavioral cues indicate a drowsy driver."
+    ]
+  ],
+  "val": {
+    "accuracy": 0.333333,
+    "weighted_f1": 0.166667,
+    "confusion_matrix": {
+      "notdrowsy": {
+        "notdrowsy": 0,
+        "drowsy": 28
+      },
+      "drowsy": {
+        "notdrowsy": 0,
+        "drowsy": 14
+      }
+    },
+    "prediction_distribution": {
+      "notdrowsy": 0,
+      "drowsy": 42
+    }
+  },
+  "test": {
+    "accuracy": 0.384615,
+    "weighted_f1": 0.213675,
+    "confusion_matrix": {
+      "notdrowsy": {
+        "notdrowsy": 0,
+        "drowsy": 24
+      },
+      "drowsy": {
+        "notdrowsy": 0,
+        "drowsy": 15
+      }
+    },
+    "prediction_distribution": {
+      "notdrowsy": 0,
+      "drowsy": 39
+    }
+  },
+  "val_metrics": {
+    "accuracy": 0.333333,
+    "precision": 0.333333,
+    "recall": 1.0,
+    "f1": 0.5
+  },
+  "test_metrics": {
+    "accuracy": 0.384615,
+    "precision": 0.384615,
+    "recall": 1.0,
+    "f1": 0.555556
+  },
+  "test_class_distribution": {
+    "notdrowsy": 24,
+    "drowsy": 15
+  },
+  "folds": [],
+  "aggregate": {
+    "accuracy": {
+      "mean": 0.384615,
+      "std": 0.0
+    },
+    "precision": {
+      "mean": 0.384615,
+      "std": 0.0
+    },
+    "recall": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "f1": {
+      "mean": 0.555556,
+      "std": 0.0
+    }
+  },
+  "zero_shot": null
+}

@@ -1,0 +1,22 @@
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+
+# Local-only data and large assets
+/aide_clip/data
+/aide_clip/cache
+/aide_clip/logs
+/aide_clip/results
+/fatigue-drive-yawning-detection
+/external_data/AIDE_Dataset
+/external_data/source_results
+/codex_runs
+
+# Editor and notebook noise
+.ipynb_checkpoints/

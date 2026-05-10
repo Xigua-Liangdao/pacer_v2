@@ -1,0 +1,11 @@
+numpy
+pillow
+tqdm
+transformers>=4.35.0
+accelerate
+opencv-python-headless
+openpyxl
+matplotlib
+scikit-learn
+pandas
+
