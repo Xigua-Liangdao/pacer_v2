@@ -156,7 +156,9 @@ def ensure_suffix_in_path(path_value: Optional[str], suffix: str) -> Optional[st
 
 
 def resolve_eval_output_paths(args, eval_mode: str, label_mode: str) -> Tuple[str, Optional[str], Optional[str]]:
-    if eval_mode == "fixed":
+    if eval_mode == "single":
+        eval_suffix = ""
+    elif eval_mode == "fixed":
         eval_suffix = "_fixed"
     elif eval_mode == "loso":
         eval_suffix = "_loso"
@@ -168,7 +170,7 @@ def resolve_eval_output_paths(args, eval_mode: str, label_mode: str) -> Tuple[st
         eval_suffix = "_random"
     baseline_suffix = "" if getattr(args, "baseline_mode", "none") == "none" else f"_{args.baseline_mode}"
     if label_mode != "multi4":
-        if eval_mode == "fixed":
+        if eval_mode in {"fixed", "single"}:
             output_path = ensure_suffix_in_path(args.output, baseline_suffix) if baseline_suffix else args.output
             log_path = ensure_suffix_in_path(args.log_file, baseline_suffix) if baseline_suffix else args.log_file
             checkpoint_path = ensure_suffix_in_path(args.checkpoint_output, baseline_suffix) if baseline_suffix else args.checkpoint_output
@@ -1032,7 +1034,7 @@ def parse_args():
     parser.add_argument("--all_face_image", default=None)
     parser.add_argument(
         "--eval_mode",
-        choices=["fixed", "loso", "group_kfold", "random", "sequence_kfold"],
+        choices=["single", "fixed", "loso", "group_kfold", "random", "sequence_kfold"],
         default="fixed",
         help="Evaluation mode; sequence_kfold: stratified k-fold on sequence index, ignoring actor grouping",
     )
@@ -1079,10 +1081,18 @@ def parse_args():
     parser.add_argument("--disable_pin_memory", dest="pin_memory", action="store_false")
     parser.add_argument("--adapter_hidden_dim", type=int, default=256)
     parser.add_argument("--adapter_dropout", type=float, default=0.3)
+    parser.add_argument("--pool_adapter_variant", choices=["legacy", "stronger"], default="legacy")
+    parser.add_argument("--adapter_mode", choices=["full", "identity"], default="full",
+                        help="full=trainable adapter MLP; identity=skip adapter, only L2-normalize CLIP features (for ablation)")
     parser.add_argument("--temporal_head", choices=["none", "attention", "transformer"], default="transformer")
+    parser.add_argument("--temporal_module", choices=["none", "cgp_fg", "taga", "mean_pool"], default="none")
     parser.add_argument("--temporal_num_heads", type=int, default=4)
     parser.add_argument("--temporal_num_layers", type=int, default=1)
     parser.add_argument("--temporal_pool_mode", choices=["cls", "mean", "hybrid"], default="mean")
+    parser.add_argument("--no_frame_gate", action="store_true")
+    parser.add_argument("--no_gem", action="store_true")
+    parser.add_argument("--no_residual_blend", action="store_true")
+    parser.add_argument("--gem_init_p", type=float, default=1.0)
     parser.add_argument("--use_class_weight", dest="use_class_weight", action="store_true")
     parser.add_argument("--disable_class_weight", dest="use_class_weight", action="store_false")
     parser.add_argument("--label_smoothing", type=float, default=0.1)
@@ -1144,7 +1154,9 @@ def parse_args():
         pin_memory=True,
         use_amp=True,
     )
-    args = parser.parse_args()
+    args, unknown_args = parser.parse_known_args()
+    if unknown_args:
+        log(f"[ARGS] ignored deprecated/unknown arguments: {' '.join(unknown_args)}")
     if args.gpu_id is not None:
         args.device = f"cuda:{args.gpu_id}"
     if (args.extract_only or args.merge_shards) and not args.split_name:
@@ -1163,7 +1175,9 @@ def parse_args():
         parser.error("--multi4_mixup_alpha must be > 0")
     if args.scheduler_min_lr < 0:
         parser.error("--scheduler_min_lr must be >= 0")
-    if args.temporal_head != "none":
+    if args.gem_init_p <= 0:
+        parser.error("--gem_init_p must be > 0")
+    if args.temporal_head != "none" or args.temporal_module in {"cgp_fg", "taga", "mean_pool"}:
         args.feature_layout = "sequence"
     if args.ccl_weight < 0:
         parser.error("--ccl_weight must be >= 0")
@@ -1542,7 +1556,14 @@ def build_result_payload(
             "feature_layout": args.feature_layout,
             "adapter_hidden_dim": args.adapter_hidden_dim,
             "adapter_dropout": args.adapter_dropout,
+            "pool_adapter_variant": args.pool_adapter_variant,
+            "adapter_mode": args.adapter_mode,
             "temporal_head": args.temporal_head,
+            "temporal_module": args.temporal_module,
+            "use_frame_gate": not args.no_frame_gate,
+            "use_gem": not args.no_gem,
+            "use_residual_blend": not args.no_residual_blend,
+            "gem_init_p": args.gem_init_p,
             "temporal_num_heads": args.temporal_num_heads,
             "temporal_num_layers": args.temporal_num_layers,
             "temporal_pool_mode": effective_temporal_pool_mode,
@@ -2306,7 +2327,32 @@ def run_single_training_evaluation(
     log(f"[SEED] split_seed={args.seed} training_seed={args.training_seed}")
 
     feature_dim = int(train_model_x.shape[-1])
-    if args.temporal_head == "attention":
+    temporal_param_count = 0
+    adapter_param_count = 0
+    pch_param_count = 0
+    if args.temporal_module in {"cgp_fg", "taga", "mean_pool"}:
+        adapter = aide_base.TemporalTransformerClipImageAdapter(
+            dim=feature_dim,
+            device=args.device,
+            hidden_dim=args.adapter_hidden_dim,
+            dropout=args.adapter_dropout,
+            num_classes=len(emotion_labels),
+            num_prompts=int(text_features.shape[1]),
+            num_frames=args.num_frames,
+            temporal_num_heads=args.temporal_num_heads,
+            temporal_num_layers=args.temporal_num_layers,
+            temporal_pool_mode=effective_temporal_pool_mode,
+            use_prompt_weight=args.resolved_use_prompt_weight,
+            use_class_temperature=args.resolved_use_class_temperature,
+            use_class_bias=args.resolved_use_class_bias,
+            temporal_module=args.temporal_module,
+            use_frame_gate=not args.no_frame_gate,
+            use_gem=not args.no_gem,
+            use_residual_blend=not args.no_residual_blend,
+            gem_init_p=args.gem_init_p,
+            adapter_mode=args.adapter_mode,
+        )
+    elif args.temporal_head == "attention":
         adapter = cremad_base.TemporalClipImageAdapter(
             dim=feature_dim,
             device=args.device,
@@ -2321,65 +2367,45 @@ def run_single_training_evaluation(
             use_class_bias=args.resolved_use_class_bias,
         )
     elif args.temporal_head == "transformer":
-        if label_mode == "multi4":
-            adapter = aide_base.TemporalTransformerClipImageAdapter(
-                dim=feature_dim,
-                device=args.device,
-                hidden_dim=args.adapter_hidden_dim,
-                dropout=args.adapter_dropout,
-                num_classes=len(emotion_labels),
-                num_prompts=int(text_features.shape[1]),
-                num_frames=args.num_frames,
-                temporal_num_heads=args.temporal_num_heads,
-                temporal_num_layers=args.temporal_num_layers,
-                temporal_pool_mode=effective_temporal_pool_mode,
-                use_prompt_weight=args.resolved_use_prompt_weight,
-                use_class_temperature=args.resolved_use_class_temperature,
-                use_class_bias=args.resolved_use_class_bias,
-            )
-        else:
-            adapter = cremad_base.TemporalTransformerClipImageAdapter(
-                dim=feature_dim,
-                device=args.device,
-                hidden_dim=args.adapter_hidden_dim,
-                dropout=args.adapter_dropout,
-                num_classes=len(emotion_labels),
-                num_prompts=int(text_features.shape[1]),
-                num_frames=args.num_frames,
-                temporal_num_heads=args.temporal_num_heads,
-                temporal_num_layers=args.temporal_num_layers,
-                temporal_pool_mode=effective_temporal_pool_mode,
-                use_global_logit_scale=False,
-                use_prompt_weight=args.resolved_use_prompt_weight,
-                use_class_temperature=args.resolved_use_class_temperature,
-                use_class_bias=args.resolved_use_class_bias,
-            )
+        adapter = aide_base.TemporalTransformerClipImageAdapter(
+            dim=feature_dim,
+            device=args.device,
+            hidden_dim=args.adapter_hidden_dim,
+            dropout=args.adapter_dropout,
+            num_classes=len(emotion_labels),
+            num_prompts=int(text_features.shape[1]),
+            num_frames=args.num_frames,
+            temporal_num_heads=args.temporal_num_heads,
+            temporal_num_layers=args.temporal_num_layers,
+            temporal_pool_mode=effective_temporal_pool_mode,
+            use_prompt_weight=args.resolved_use_prompt_weight,
+            use_class_temperature=args.resolved_use_class_temperature,
+            use_class_bias=args.resolved_use_class_bias,
+            temporal_module="taga",
+            adapter_mode=args.adapter_mode,
+        )
     else:
-        if label_mode == "multi4":
-            adapter = aide_base.ClipImageAdapter(
-                dim=feature_dim,
-                device=args.device,
-                hidden_dim=args.adapter_hidden_dim,
-                dropout=args.adapter_dropout,
-                num_classes=len(emotion_labels),
-                num_prompts=int(text_features.shape[1]),
-                use_prompt_weight=args.resolved_use_prompt_weight,
-                use_class_temperature=args.resolved_use_class_temperature,
-                use_class_bias=args.resolved_use_class_bias,
-            )
-        else:
-            adapter = cremad_base.ClipImageAdapter(
-                dim=feature_dim,
-                device=args.device,
-                hidden_dim=args.adapter_hidden_dim,
-                dropout=args.adapter_dropout,
-                num_classes=len(emotion_labels),
-                num_prompts=int(text_features.shape[1]),
-                use_global_logit_scale=False,
-                use_prompt_weight=args.resolved_use_prompt_weight,
-                use_class_temperature=args.resolved_use_class_temperature,
-                use_class_bias=args.resolved_use_class_bias,
-            )
+        pool_adapter_cls = aide_base.StrongerClipImageAdapter if args.pool_adapter_variant == "stronger" else aide_base.ClipImageAdapter
+        adapter = pool_adapter_cls(
+            dim=feature_dim,
+            device=args.device,
+            hidden_dim=args.adapter_hidden_dim,
+            dropout=args.adapter_dropout,
+            num_classes=len(emotion_labels),
+            num_prompts=int(text_features.shape[1]),
+            use_prompt_weight=args.resolved_use_prompt_weight,
+            use_class_temperature=args.resolved_use_class_temperature,
+            use_class_bias=args.resolved_use_class_bias,
+            adapter_mode=args.adapter_mode,
+        )
+    if hasattr(adapter, "taga_parameters"):
+        temporal_param_count = aide_base.count_parameters(adapter.taga_parameters())
+    if hasattr(adapter, "adapter_parameters"):
+        adapter_param_count = aide_base.count_parameters(adapter.adapter_parameters())
+    if hasattr(adapter, "qcpa_parameters"):
+        pch_param_count = aide_base.count_parameters(adapter.qcpa_parameters())
+    trainable_param_count = aide_base.count_parameters(adapter.parameters())
+    log(f"[PCH] params | head={pch_param_count} | temporal={temporal_param_count} | adapter={adapter_param_count} | trainable={trainable_param_count} | adapter_mode={args.adapter_mode} | temporal_module={args.temporal_module}")
     adapter = cremad_base.train_strict_frozen_clip(
         train_x=train_model_x,
         train_y=train_model_y,
