@@ -1,0 +1,24 @@
+% Auto-generated Stage 9 B-prime YawDD sweep
+\begin{table}[t]
+\centering
+\caption{YawDD B-prime hyperparameter sensitivity.}
+\label{tab:yawdd_bprime_sweep}
+\begin{tabular}{lccccccccc}
+\toprule
+Config & Hidden & Dropout & LR & WD & Loss & LS & Frames & Val WF1 & Test WF1 \\
+\midrule
+P2 & 512 & 0.3 & 1e-4 & 1e-2 & focal(gamma=2.0) & 0.01 & 10 & 0.897 & 0.821 \\
+P5 & 1024 & 0.3 & 5e-5 & 1e-2 & focal(gamma=2.0) & 0.01 & 10 & 0.776 & 0.796 \\
+P4 & 2048 & 0.5 & 1e-4 & 1e-2 & focal(gamma=2.0) & 0.01 & 10 & 0.897 & 0.786 \\
+P11 & 1024 & 0.3 & 1e-4 & 1e-2 & focal(gamma=2.0) & 0.01 & 16 & 0.917 & 0.786 \\
+P12 & 2048 & 0.5 & 5e-5 & 5e-2 & focal(gamma=2.0) & 0.01 & 16 & 0.858 & 0.771 \\
+P8 & 1024 & 0.3 & 1e-4 & 1e-2 & focal(gamma=2.0) & 0.0 & 10 & 0.874 & 0.768 \\
+P3 & 1024 & 0.3 & 1e-4 & 1e-2 & focal(gamma=2.0) & 0.01 & 10 & 0.917 & 0.749 \\
+P6 & 1024 & 0.3 & 2e-4 & 1e-2 & focal(gamma=2.0) & 0.01 & 10 & 0.917 & 0.749 \\
+P9 & 1024 & 0.3 & 1e-4 & 1e-2 & focal(gamma=3.0) & 0.01 & 10 & 0.917 & 0.749 \\
+P10 & 1024 & 0.3 & 1e-4 & 5e-2 & focal(gamma=2.0) & 0.01 & 10 & 0.917 & 0.749 \\
+P1 & 256 & 0.2 & 1e-4 & 1e-2 & focal(gamma=2.0) & 0.01 & 10 & 0.859 & 0.724 \\
+P7 & 1024 & 0.3 & 1e-4 & 1e-2 & ce & 0.01 & 10 & 0.917 & 0.720 \\
+\bottomrule
+\end{tabular}
+\end{table}

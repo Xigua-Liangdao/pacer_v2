@@ -1,0 +1,6 @@
+dataset,ablation_id,ablation_name,seed,test_acc,test_wf1,drowsy_f1,notdrowsy_f1,result_json_path
+YawDD,YA0,Ours full B-prime,42,0.822581,0.821486,0.731707,0.8674698795180722,/data1/yanjing/pacer_v2/results/final_runs/yawdd/B_A0_seed42_canonical/result.json
+YawDD,YA0,Ours full B-prime,123,0.806452,0.808431,0.727273,0.8500000000000001,/data1/yanjing/pacer_v2/results/final_runs/yawdd/B_A0_seed123_canonical/result.json
+YawDD,YA0,Ours full B-prime,2024,0.741935,0.738556,0.6,0.8095238095238095,/data1/yanjing/pacer_v2/results/final_runs/yawdd/B_A0_seed2024_canonical/result.json
+YawDD,YA0,Ours full B-prime,7,0.790323,0.794668,0.723404,0.8311688311688312,/data1/yanjing/pacer_v2/results/final_runs/yawdd/B_A0_seed7_canonical/result.json
+YawDD,YA0,Ours full B-prime,31,0.83871,0.840359,0.772727,0.875,/data1/yanjing/pacer_v2/results/final_runs/yawdd/B_A0_seed31_canonical/result.json

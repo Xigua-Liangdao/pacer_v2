@@ -1,0 +1,42 @@
+{
+  "files": [
+    "/data1/yanjing/pacer_v2/paper_tables/table1_main.md",
+    "/data1/yanjing/pacer_v2/paper_tables/table1_main.tex",
+    "/data1/yanjing/pacer_v2/paper_tables/table2_aide_pch_ablation.md",
+    "/data1/yanjing/pacer_v2/paper_tables/table2_aide_pch_ablation.tex",
+    "/data1/yanjing/pacer_v2/paper_tables/tableS1_aide_architecture_choice.md",
+    "/data1/yanjing/pacer_v2/paper_tables/tableS1_aide_architecture_choice.tex",
+    "/data1/yanjing/pacer_v2/paper_tables/raw_per_seed.csv"
+  ],
+  "raw_rows": 27,
+  "warnings": [],
+  "notes": [
+    "raw_per_seed.csv has 27 data rows because A0x6 + A1-A7x3 = 27."
+  ],
+  "stage_notes": {
+    "branch": "paper/final-ablation",
+    "stage1_commit": "066681a Prepare AIDE final ablation controls",
+    "aide_pilot": {
+      "run_id": "A0_ours_full_seed42_pilot",
+      "test_acc": 0.826758,
+      "test_wf1": 0.815926,
+      "result_json": "results/final_runs/aide/A0_ours_full_seed42_pilot/result.json"
+    },
+    "stage3": {
+      "scope": "AIDE only; YawDD skipped by user decision",
+      "new_runs": "A1-A7 x 3 training_seed values = 21 runs",
+      "a0_source": "aide_pool_best_ls001 base + seed_sweep training_seed {11,14,18,24,28}",
+      "orchestration_note": "Initial A4-A7 commands had ablation flags before base flags; the affected artifacts were preserved with .orchestration_bug suffix and A4-A7 were rerun with corrected flag order."
+    },
+    "yawdd": {
+      "status": "paused for paper narrative decision",
+      "zero_shot_acc": 0.435484,
+      "zero_shot_wf1": 0.396329,
+      "oldface_b4_repro_wf1": 0.568125,
+      "disk_b4_wf1": 0.213675
+    }
+  },
+  "table1_md": "| dataset | test_acc (mean±std) | test_wf1 (mean±std) | Anxiety F1 | Peace F1 | Weariness F1 | Happiness F1 | Anger F1 |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| AIDE | 0.798 ± 0.014 | 0.788 ± 0.014 | 0.645 ± 0.019 | 0.858 ± 0.011 | 0.792 ± 0.029 | 0.748 ± 0.042 | 0.529 ± 0.037 |\n| YawDD | — (see Section 4.5) | — (see Section 4.5) | — | — | — | — | — |\n",
+  "table2_md": "| ablation | test_acc (mean±std) | test_wf1 (mean±std) | Delta wf1 vs A0 |\n| --- | --- | --- | --- |\n| A0 Ours full | 0.798 ± 0.014 | 0.788 ± 0.014 | — |\n| A1 w/o prompt weight | 0.803 ± 0.003 | 0.790 ± 0.005 | +0.002 |\n| A2 w/o class scale γ | 0.795 ± 0.013 | 0.774 ± 0.015 | -0.014 |\n| A3 w/o class bias b | 0.805 ± 0.009 | 0.792 ± 0.013 | +0.005 |\n| A4 w/o adapter MLP | 0.592 ± 0.000 | 0.441 ± 0.000 | -0.346 |\n",
+  "tableS1_md": "| architecture | test_acc (mean±std) | test_wf1 (mean±std) | Delta wf1 vs A0 |\n| --- | --- | --- | --- |\n| A0 pooled (baseline) | 0.798 ± 0.014 | 0.788 ± 0.014 | — |\n| A5 mean_pool | 0.807 ± 0.011 | 0.794 ± 0.011 | +0.006 |\n| A6 cgp_fg | 0.731 ± 0.021 | 0.701 ± 0.026 | -0.087 |\n| A7 taga | 0.626 ± 0.054 | 0.499 ± 0.096 | -0.288 |\n"
+}

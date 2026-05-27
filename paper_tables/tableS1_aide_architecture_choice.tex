@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccccc}
+\toprule
+architecture & acc Best & acc Mean$\pm$Std & wf1 Best & wf1 Mean$\pm$Std & Δwf1 vs A0 Mean \\
+\midrule
+A0 pooled (baseline) & 0.801 & 0.789 $\pm$ 0.017 & 0.786 & 0.777 $\pm$ 0.011 & --- \\
+A5 mean\_pool & 0.815 & 0.807 $\pm$ 0.011 & 0.800 & 0.794 $\pm$ 0.011 & +0.017 \\
+A6 cgp\_fg & 0.744 & 0.731 $\pm$ 0.021 & 0.720 & 0.701 $\pm$ 0.026 & -0.076 \\
+A7 taga & 0.688 & 0.626 $\pm$ 0.054 & 0.610 & 0.499 $\pm$ 0.096 & -0.277 \\
+\bottomrule
+\end{tabular}
+\vspace{2pt}\footnotesize A0/A5/A6/A7 use the three canonical seeds (42, 123, 2024). A7 has high seed variance; one seed partially converged while two collapsed, pending user decision.
+\caption{Supplementary architecture choice comparison on AIDE.}
+\label{tab:supp_aide_architecture}
+\end{table}

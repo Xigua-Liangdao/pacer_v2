@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccccccc}
+\toprule
+variant & frames & loss & lr & ls & class weight & sampling & test wf1 \\
+\midrule
+W0 baseline & 5 & ce & 1.5e-04 & 0.1 & off & middle_late & 0.526464 \\
+W1 + num_frames=10 & 10 & ce & 1.5e-04 & 0.1 & off & middle_late & 0.526464 \\
+W2 + class weight & 10 & ce & 1.5e-04 & 0.1 & on & middle_late & 0.904952 \\
+W3 + focal gamma=1 & 10 & focal(1.0) & 1.5e-04 & 0.1 & on & middle_late & 0.904952 \\
+W4 + gamma=2/lr/ls & 10 & focal(2.0) & 1.0e-04 & 0.01 & on & middle_late & 0.904952 \\
+W5 + diff_guided sampling & 10 & focal(2.0) & 1.0e-04 & 0.01 & on & diff_guided & 0.919795 \\
+\bottomrule
+\end{tabular}
+\vspace{2pt}\footnotesize Class-weighted training is the dominant stabilizer for YawDD binary recognition.
+\caption{Attribution analysis for YawDD configuration improvements.}
+\label{tab:yawdd_attribution}
+\end{table}
