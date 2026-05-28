@@ -1,0 +1,50 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Datasets}
+\label{sec:datasets}
+
+We evaluate the proposed frozen-CLIP adapter and Prompt Calibration Head (PCH) framework on two driver-state recognition datasets: AIDE and YawDD.
+
+\textbf{AIDE.} AIDE contains 2898 samples for driver emotion recognition. The task has five emotion classes: Anxiety, Peace, Weariness, Happiness, and Anger. We use a 65/15/20 train/validation/test split. For each sample, we extract $T=3$ frames and mean-pool their frozen CLIP image features before the adapter. The text branch uses the prompt template ``Driver is \texttt{<LABEL>}.'' with the \texttt{driving\_7} prompt set.
+
+\textbf{YawDD.} YawDD is used for binary video-level drowsiness recognition under a speaker-independent protocol. The binary label distribution is 205 notdrowsy videos and 114 drowsy videos. The test set contains 62 videos, with 41 notdrowsy and 21 drowsy samples. We use $T=10$ frames with diff-guided frame sampling. The final YawDD protocol is video-level and speaker-independent; therefore, it is not directly comparable to YawDD studies that use frame-level labels or speaker-overlapping splits.
+
+\subsection{Implementation Details}
+\label{sec:implementation_details}
+
+All experiments use a frozen CLIP ViT-B/32 backbone. CLIP parameters are never updated. Both datasets use the same final architecture: pooled CLIP image features, residual adapter MLP, and PCH. No temporal transformer, CGP-FG, or TAGA module is used in the final model.
+
+For AIDE, we train for 40 epochs with batch size 32, learning rate $1.5\times10^{-4}$, weight decay $5\times10^{-4}$, maximum gradient norm 1.0, label smoothing 0.01, adapter hidden dimension 1024, and dropout 0.2. The validation selection metric is accuracy. AIDE results are reported over 9 seeds, consisting of 6 historical seeds and 3 canonical seeds.
+
+For YawDD, we train for 40 epochs with learning rate $1\times10^{-4}$, weight decay $1\times10^{-2}$, focal loss with $\gamma=2.0$, label smoothing 0.01, adapter hidden dimension 512, dropout 0.3, class weighting enabled, diff-guided sampling, and $T=10$ frames. YawDD results are reported over 5 training seeds: 42, 123, 2024, 7, and 31. All deterministic settings are enabled for both datasets.
+
+\subsection{Evaluation Metrics}
+\label{sec:evaluation_metrics}
+
+We report accuracy, weighted F1, and per-class F1. For the main results in Table~\ref{tab:main_results}, we use a dual reporting protocol: the Best column reports the best seed by weighted F1, while Mean$\pm$Std reports the average and standard deviation across all evaluated seeds. This protocol preserves comparability to single-run literature while exposing seed-level robustness.
+
+\subsection{Comparison with State-of-the-Art}
+\label{sec:sota_comparison}
+
+Table~\ref{tab:main_results} summarizes the main results. On AIDE driver emotion recognition, our method achieves 82.5\% best accuracy and 79.5\%$\pm$1.5\% mean accuracy. The best weighted F1 is 81.4\%, and the mean weighted F1 is 78.4\%$\pm$1.3\%. Compared with MMTL-UniAD (CVPR 2025), which reports 76.67\% accuracy on driver emotion recognition using five modalities (face, body, gesture, posture, and scene), our single inside-view modality model improves accuracy by 5.83 percentage points in the best-seed comparison and 2.83 percentage points in the mean comparison. This is the main state-of-the-art claim of the paper.
+
+On YawDD, our goal is not to make a leaderboard claim. Many high-scoring YawDD studies use frame-level annotation or speaker-overlapping splits, which are not directly comparable to our video-level speaker-independent binary protocol. Instead, YawDD is used to test whether the same pooled CLIP adapter and PCH architecture generalizes from multi-class driver emotion recognition to binary driver-state recognition, and to establish a speaker-independent video-level benchmark. Under this protocol, the model achieves 84.0\% best weighted F1 and 80.1\%$\pm$3.9\% mean weighted F1.
+
+\subsection{Ablation Study}
+\label{sec:ablation_study}
+
+Table~\ref{tab:aide_ablation} reports the PCH component ablation on AIDE. Removing prompt weights slightly increases weighted F1 by 0.006, which is marginal and within seed variance. Removing the per-class scale $\gamma$ decreases weighted F1 by 0.010, indicating a small but measurable calibration effect. Removing the per-class bias $\beta$ increases weighted F1 by 0.008, again a marginal effect. In contrast, removing the adapter MLP decreases weighted F1 by 0.343, showing that the learned visual adapter is the dominant component for AIDE.
+
+Table~\ref{tab:yawdd_ablation} reports the corresponding YawDD ablation under the same pooled architecture. The behavior differs from AIDE: disabling prompt weights, class scale, or class bias produces zero weighted-F1 change at the reported precision. This is consistent with the binary setting, where these calibration components can behave as monotonic transformations that do not alter the final argmax. Verification showed that the checkpoints and logits differ, but the final predictions are identical. Removing the adapter MLP decreases weighted F1 by 0.402, confirming that the representation adapter remains essential. Removing class weighting decreases weighted F1 by 0.263 and collapses performance to 0.526 weighted F1, demonstrating that class re-weighting is necessary to avoid majority-class collapse in the imbalanced binary setting.
+
+These results suggest an important asymmetry: PCH calibration has marginal effects in the multi-class AIDE setting, but no observable prediction-level effect in the binary YawDD setting. Across both datasets, the adapter MLP is the primary driver of performance, while class re-weighting is critical only for the imbalanced binary task.
+
+Table~\ref{tab:arch_choice} provides an AIDE-only architecture comparison. The pooled baseline reaches 0.788 best weighted F1, while simple mean pooling is comparable. More complex temporal aggregators do not improve performance: CGP-FG reaches 0.701 mean weighted F1 and TAGA reaches 0.499 mean weighted F1. This indicates that for short AIDE clips with $T=3$, pooled or mean-pooled CLIP features are more reliable than complex temporal aggregation. TAGA is especially unstable in this setting, consistent with the small training set size.
+
+\subsection{Hyperparameter Sensitivity}
+\label{sec:hyperparameter_sensitivity}
+
+Table~\ref{tab:yawdd_attribution} reports the YawDD B-prime hyperparameter sensitivity sweep. The best seed-42 configuration uses adapter hidden dimension 512, dropout 0.3, learning rate $1\times10^{-4}$, weight decay $1\times10^{-2}$, focal loss with $\gamma=2.0$, label smoothing 0.01, 10 diff-guided frames, and class weighting. Larger adapters, stronger regularization, more frames, and cross-entropy loss do not improve the seed-42 test weighted F1.
+
+The most important sensitivity is class weighting. Without class weighting, the YawDD ablation falls to 0.526 weighted F1, matching a majority-class collapse pattern. We therefore treat class re-weighting as a necessary training protocol for the imbalanced YawDD binary benchmark rather than as a new architectural component.

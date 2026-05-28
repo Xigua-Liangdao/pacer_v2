@@ -1,0 +1,116 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Overview}
+\label{sec:method_overview}
+
+We propose a unified Prompt Calibration Head (PCH) framework for driver state recognition. As illustrated in Fig.~\ref{fig:architecture}, the model consists of a frozen CLIP ViT-B/32 backbone, a residual image adapter, and a prompt-calibrated classification head. The CLIP image encoder is used only as a feature extractor and all CLIP parameters are kept frozen throughout training. For both AIDE and YawDD, the image branch follows the same architecture: frame-level CLIP image features are averaged over time, passed through an adapter MLP, and classified by PCH. No temporal transformer, CGP-FG, or TAGA module is used in the final model.
+
+The text branch constructs a class prompt feature bank from multiple prompts per class. PCH then compares the adapted visual representation against all class prompts, applies learnable prompt weights, and calibrates each class score using a per-class scale and bias. This design keeps the expensive vision-language backbone fixed while learning a lightweight task-specific representation and calibration layer.
+
+\subsection{Frozen CLIP Feature Extraction}
+\label{sec:frozen_clip_features}
+
+Given an input video or image sequence with $T$ sampled frames, the frozen CLIP image encoder extracts a feature vector for each frame. Let $\mathbf{x}_{b,t} \in \mathbb{R}^{D}$ denote the CLIP image feature for sample $b$ and frame $t$. We use mean pooling over frames to obtain a single visual feature,
+\begin{equation}
+    \bar{\mathbf{x}}_{b} = \frac{1}{T}\sum_{t=1}^{T} \mathbf{x}_{b,t},
+    \qquad \bar{\mathbf{x}}_{b} \in \mathbb{R}^{D}.
+    \label{eq:frame_pooling}
+\end{equation}
+For AIDE, $T=3$ frames are used; for YawDD, $T=10$ frames are used with diff-guided frame sampling.
+
+For the text branch, each class is represented by $P$ prompts. The frozen CLIP text encoder maps the prompts into a class prompt feature bank,
+\begin{equation}
+    \mathbf{T} = \{\mathbf{T}_{c,p}\}_{c=1,p=1}^{C,P},
+    \qquad \mathbf{T} \in \mathbb{R}^{C \times P \times D},
+    \label{eq:prompt_bank}
+\end{equation}
+where $C$ is the number of classes and $D$ is the CLIP feature dimension. AIDE uses the template ``Driver is \texttt{<LABEL>}.'' with the \texttt{driving\_7} prompt set, while YawDD uses the template ``The driver looks \texttt{<LABEL>}.'' with the \texttt{yawdd\_facial\_cues} prompt set.
+
+\subsection{Residual Image Adapter}
+\label{sec:image_adapter}
+
+The pooled CLIP visual feature is adapted by a residual MLP before classification. Let $\bar{\mathbf{x}}_{b}$ be the pooled feature in Eq.~\eqref{eq:frame_pooling}. The adapter first projects it into a hidden space,
+\begin{equation}
+    \mathbf{u}_{b} = \mathrm{input\_proj}(\bar{\mathbf{x}}_{b}),
+    \qquad \mathbf{u}_{b} \in \mathbb{R}^{H},
+    \label{eq:adapter_input_proj}
+\end{equation}
+where $H$ is the adapter hidden dimension. The residual block contains LayerNorm, linear layers, GELU activation, and dropout,
+\begin{equation}
+    \Delta \mathbf{u}_{b} = \mathrm{MLP}(\mathrm{LayerNorm}(\mathbf{u}_{b})).
+    \label{eq:adapter_residual_block}
+\end{equation}
+The hidden representation is fused by a residual connection and projected back to the CLIP feature dimension,
+\begin{equation}
+    \mathbf{r}_{b} = \mathrm{out\_proj}(\mathbf{u}_{b} + \Delta \mathbf{u}_{b}),
+    \qquad \mathbf{r}_{b} \in \mathbb{R}^{D}.
+    \label{eq:adapter_out_proj}
+\end{equation}
+The adapter output is added back to the pooled CLIP feature and then $\ell_2$ normalized,
+\begin{equation}
+    \tilde{\mathbf{h}}_{b} = \bar{\mathbf{x}}_{b} + \mathbf{r}_{b},
+    \qquad
+    \mathbf{h}_{b} = \frac{\tilde{\mathbf{h}}_{b}}{\|\tilde{\mathbf{h}}_{b}\|_{2}},
+    \qquad \mathbf{h}_{b} \in \mathbb{R}^{D}.
+    \label{eq:adapter_l2_norm}
+\end{equation}
+AIDE uses $H=1024$ with dropout $0.2$, and YawDD uses $H=512$ with dropout $0.3$.
+
+\subsection{Prompt Calibration Head}
+\label{sec:pch}
+
+PCH receives the adapted visual feature $\mathbf{h} \in \mathbb{R}^{B \times D}$ and the class prompt bank $\mathbf{T} \in \mathbb{R}^{C \times P \times D}$. The prompt-level cosine similarity is
+\begin{equation}
+    s_{b,c,p} = \cos(\mathbf{h}_{b}, \mathbf{T}_{c,p}),
+    \qquad s \in \mathbb{R}^{B \times C \times P}.
+    \label{eq:pch_similarity}
+\end{equation}
+For each class, PCH learns prompt weights by applying a softmax over the prompt dimension,
+\begin{equation}
+    \alpha_{c,p} = \frac{\exp(\mathrm{prompt\_weight\_logits}_{c,p})}
+    {\sum_{p'=1}^{P}\exp(\mathrm{prompt\_weight\_logits}_{c,p'})}.
+    \label{eq:pch_prompt_weight}
+\end{equation}
+The class-level prompt score is then computed as a weighted average of prompt similarities,
+\begin{equation}
+    \mathrm{score}_{b,c} = \sum_{p=1}^{P} \alpha_{c,p} \cdot s_{b,c,p}.
+    \label{eq:pch_class_score}
+\end{equation}
+PCH calibrates the class score with a learnable per-class scale and bias,
+\begin{equation}
+    \ell_{b,c} = \gamma_{c} \cdot \mathrm{score}_{b,c} + \beta_{c},
+    \label{eq:pch_calibrated_logit}
+\end{equation}
+where $\beta_{c}$ is the per-class bias and
+\begin{equation}
+    \gamma_{c} = \mathrm{clamp}\left(\exp(\mathrm{log\_class\_scale}_{c}), 0.5, 2.5\right).
+    \label{eq:pch_class_scale}
+\end{equation}
+The final logits include a global log scale,
+\begin{equation}
+    \mathrm{logits}_{b,c} = \exp(\mathrm{global\_log\_scale}) \cdot \ell_{b,c}.
+    \label{eq:pch_global_scale}
+\end{equation}
+The predicted class is obtained by
+\begin{equation}
+    \hat{y}_{b} = \arg\max_{c} \; \mathrm{logits}_{b,c}.
+    \label{eq:pch_prediction}
+\end{equation}
+
+\subsection{Training Objective}
+\label{sec:training_objective}
+
+The training objective is dataset-specific while the architecture remains identical. For AIDE, we use cross-entropy with label smoothing. Given class label $y_b$, the AIDE objective is
+\begin{equation}
+    \mathcal{L}_{\mathrm{AIDE}} = \mathrm{CE}_{\mathrm{ls}=0.01}(\mathrm{logits}_{b}, y_b).
+    \label{eq:aide_loss}
+\end{equation}
+
+For YawDD, we use focal loss with class re-weighting to address binary label imbalance. Let $w_{y_b}$ be the class weight, $p_{b,y_b}$ be the predicted probability of the ground-truth class, and $\gamma=2.0$ be the focal parameter. The YawDD objective is
+\begin{equation}
+    \mathcal{L}_{\mathrm{YawDD}} = - w_{y_b} (1 - p_{b,y_b})^{\gamma} \log p_{b,y_b},
+    \qquad \gamma=2.0.
+    \label{eq:yawdd_focal_loss}
+\end{equation}
+Label smoothing $0.01$ is also used for YawDD. In all experiments, only the adapter MLP and PCH parameters are updated, while the CLIP image and text encoders remain frozen.

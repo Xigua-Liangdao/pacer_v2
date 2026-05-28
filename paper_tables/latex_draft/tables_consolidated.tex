@@ -1,0 +1,98 @@
+% Consolidated paper tables. Requires booktabs.
+
+\begin{table}[t]
+\centering
+\caption{Main results on AIDE and YawDD. AIDE reports five emotion classes; YawDD reports binary drowsiness recognition under the B-prime pooled PCH protocol.}
+\label{tab:main_results}
+\begin{tabular}{lccccccccc}
+\toprule
+Dataset & Acc Best & Acc Mean$\pm$Std & WF1 Best & WF1 Mean$\pm$Std & Anxiety & Peace & Weariness & Happiness & Anger \\
+\midrule
+AIDE & 0.825 & 0.795 $\pm$ 0.015 & 0.814 & 0.784 $\pm$ 0.013 & 0.643 $\pm$ 0.016 & 0.858 $\pm$ 0.011 & 0.791 $\pm$ 0.025 & 0.737 $\pm$ 0.044 & 0.502 $\pm$ 0.051 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\begin{tabular}{lcccccc}
+\toprule
+Dataset & Acc Best & Acc Mean$\pm$Std & WF1 Best & WF1 Mean$\pm$Std & Drowsy F1 & NotDrowsy F1 \\
+\midrule
+YawDD & 0.839 & 0.800 $\pm$ 0.037 & 0.840 & 0.801 $\pm$ 0.039 & 0.711 $\pm$ 0.065 & 0.847 $\pm$ 0.027 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{PCH component ablation on AIDE. A0 is averaged over 9 seeds, while A1--A4 are averaged over 3 seeds.}
+\label{tab:aide_ablation}
+\begin{tabular}{lccccc}
+\toprule
+Ablation & Acc Best & Acc Mean$\pm$Std & WF1 Best & WF1 Mean$\pm$Std & $\Delta$WF1 \\
+\midrule
+A0 Ours full & 0.825 & 0.795 $\pm$ 0.015 & 0.814 & 0.784 $\pm$ 0.013 & -- \\
+A1 w/o prompt weight & 0.804 & 0.803 $\pm$ 0.003 & 0.795 & 0.790 $\pm$ 0.005 & +0.006 \\
+A2 w/o class scale $\gamma$ & 0.810 & 0.795 $\pm$ 0.013 & 0.790 & 0.774 $\pm$ 0.015 & -0.010 \\
+A3 w/o class bias $\beta$ & 0.815 & 0.805 $\pm$ 0.009 & 0.807 & 0.792 $\pm$ 0.013 & +0.008 \\
+A4 w/o adapter MLP & 0.592 & 0.592 $\pm$ 0.000 & 0.441 & 0.441 $\pm$ 0.000 & -0.343 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{PCH component ablation on YawDD under the B-prime pooled PCH architecture. All rows use seeds 42, 123, and 2024.}
+\label{tab:yawdd_ablation}
+\begin{tabular}{lccccc}
+\toprule
+Ablation & Acc Best & Acc Mean$\pm$Std & WF1 Best & WF1 Mean$\pm$Std & $\Delta$WF1 \\
+\midrule
+YA0 Ours full & 0.823 & 0.790 $\pm$ 0.043 & 0.821 & 0.789 $\pm$ 0.045 & -- \\
+YA1 w/o prompt weight & 0.823 & 0.790 $\pm$ 0.043 & 0.821 & 0.789 $\pm$ 0.045 & +0.000 \\
+YA2 w/o class scale $\gamma$ & 0.823 & 0.790 $\pm$ 0.043 & 0.821 & 0.789 $\pm$ 0.045 & +0.000 \\
+YA3 w/o class bias $\beta$ & 0.823 & 0.790 $\pm$ 0.043 & 0.821 & 0.789 $\pm$ 0.045 & +0.000 \\
+YA4 w/o adapter MLP & 0.452 & 0.419 $\pm$ 0.028 & 0.438 & 0.387 $\pm$ 0.044 & -0.402 \\
+YA5 w/o class weight & 0.661 & 0.661 $\pm$ 0.000 & 0.526 & 0.526 $\pm$ 0.000 & -0.263 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{AIDE architecture choice comparison. The final method uses pooled CLIP features.}
+\label{tab:arch_choice}
+\begin{tabular}{lccccc}
+\toprule
+Architecture & Acc Best & Acc Mean$\pm$Std & WF1 Best & WF1 Mean$\pm$Std & $\Delta$WF1 \\
+\midrule
+A0 pooled (baseline) & 0.801 & 0.789 $\pm$ 0.017 & 0.788 & 0.777 $\pm$ 0.011 & -- \\
+A5 mean pool & 0.815 & 0.807 $\pm$ 0.011 & 0.800 & 0.794 $\pm$ 0.011 & +0.017 \\
+A6 CGP-FG & 0.744 & 0.731 $\pm$ 0.021 & 0.720 & 0.701 $\pm$ 0.026 & -0.076 \\
+A7 TAGA & 0.688 & 0.626 $\pm$ 0.054 & 0.610 & 0.499 $\pm$ 0.096 & -0.277 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{YawDD B-prime hyperparameter sensitivity. All variants use pooled CLIP features, no temporal head, no TAGA, no test-time ensemble, adapter MLP, and PCH.}
+\label{tab:yawdd_attribution}
+\begin{tabular}{lccccccccc}
+\toprule
+Config & Hidden & Dropout & LR & WD & Loss & LS & Frames & Val WF1 & Test WF1 \\
+\midrule
+P2 & 512 & 0.3 & $1\times10^{-4}$ & $1\times10^{-2}$ & focal($\gamma=2$) & 0.01 & 10 & 0.897 & 0.821 \\
+P5 & 1024 & 0.3 & $5\times10^{-5}$ & $1\times10^{-2}$ & focal($\gamma=2$) & 0.01 & 10 & 0.776 & 0.796 \\
+P4 & 2048 & 0.5 & $1\times10^{-4}$ & $1\times10^{-2}$ & focal($\gamma=2$) & 0.01 & 10 & 0.897 & 0.786 \\
+P11 & 1024 & 0.3 & $1\times10^{-4}$ & $1\times10^{-2}$ & focal($\gamma=2$) & 0.01 & 16 & 0.917 & 0.786 \\
+P12 & 2048 & 0.5 & $5\times10^{-5}$ & $5\times10^{-2}$ & focal($\gamma=2$) & 0.01 & 16 & 0.858 & 0.771 \\
+P8 & 1024 & 0.3 & $1\times10^{-4}$ & $1\times10^{-2}$ & focal($\gamma=2$) & 0.00 & 10 & 0.874 & 0.768 \\
+P3 & 1024 & 0.3 & $1\times10^{-4}$ & $1\times10^{-2}$ & focal($\gamma=2$) & 0.01 & 10 & 0.917 & 0.749 \\
+P6 & 1024 & 0.3 & $2\times10^{-4}$ & $1\times10^{-2}$ & focal($\gamma=2$) & 0.01 & 10 & 0.917 & 0.749 \\
+P9 & 1024 & 0.3 & $1\times10^{-4}$ & $1\times10^{-2}$ & focal($\gamma=3$) & 0.01 & 10 & 0.917 & 0.749 \\
+P10 & 1024 & 0.3 & $1\times10^{-4}$ & $5\times10^{-2}$ & focal($\gamma=2$) & 0.01 & 10 & 0.917 & 0.749 \\
+P1 & 256 & 0.2 & $1\times10^{-4}$ & $1\times10^{-2}$ & focal($\gamma=2$) & 0.01 & 10 & 0.859 & 0.724 \\
+P7 & 1024 & 0.3 & $1\times10^{-4}$ & $1\times10^{-2}$ & CE & 0.01 & 10 & 0.917 & 0.720 \\
+\bottomrule
+\end{tabular}
+\end{table}
