@@ -129,7 +129,7 @@ For table-ready values and row naming, see [docs/RESULTS.md](docs/RESULTS.md).
 
 ## Figures
 
-The diagrams below are exported from the supplied paper presentation deck, so the README follows the same visual material used for the manuscript rather than regenerated placeholder art.
+The diagrams below are rendered from the supplied paper presentation deck after converting it to PDF. The README therefore uses the same visual material as the manuscript deck rather than regenerated placeholder art. The source PDF is kept at `paper_assets/source_paper_deck.pdf`.
 
 <p align="center">
   <img src="paper_assets/fig_temporal_aggregation_detail.png" width="82%" alt="Temporal aggregation detail from the paper presentation">
