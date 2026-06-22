@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the associated PACER paper."
+title: "Parameter-Efficient Vision--Language Adaptation for Driver State Recognition via Frozen Feature Alignment"
+authors:
+  - family-names: "Tu"
+    given-names: "Yanjing"
+repository-code: "https://github.com/Xigua-Liangdao/pacer_v2"
+date-released: "2026-06-22"
