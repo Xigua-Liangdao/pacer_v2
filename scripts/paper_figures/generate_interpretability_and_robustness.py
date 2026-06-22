@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate real analysis figures for PACER paper revisions.
+"""Generate real analysis figures for the driver-state paper revisions.
 
 The script intentionally performs inference/extraction from existing
 checkpoints and caches only. It does not train models and does not invent

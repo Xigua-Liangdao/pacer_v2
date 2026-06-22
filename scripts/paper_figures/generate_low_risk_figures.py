@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate low-risk paper figures from existing PACER results.
+"""Generate low-risk paper figures from existing frozen feature alignment results.
 
 This script does not train models and does not invent values. It reads
 existing tables, JSON summaries, and checkpoints, then exports both the

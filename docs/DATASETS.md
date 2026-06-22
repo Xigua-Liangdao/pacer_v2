@@ -1,6 +1,6 @@
 # Dataset layout and protocols
 
-PACER does not redistribute AIDE or YawDD. Download the datasets from their official sources and place them under `data/`, or provide paths through environment variables.
+This repository does not redistribute AIDE or YawDD. Download the datasets from their official sources and place them under `data/`, or provide paths through environment variables.
 
 ## AIDE
 

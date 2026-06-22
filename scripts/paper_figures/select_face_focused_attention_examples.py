@@ -2,7 +2,7 @@
 """Select AIDE samples where adapted patch relevance moves toward the face.
 
 This script compares raw frozen CLIP patch relevance against the saved
-PACER/Ours adapter patch relevance. It is a qualitative diagnostic and
+the adapted model/Ours adapter patch relevance. It is a qualitative diagnostic and
 does not use or imply a supervised non-CLIP baseline.
 """
 

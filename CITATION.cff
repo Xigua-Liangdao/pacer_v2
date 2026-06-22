@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this repository, please cite the associated PACER paper."
+message: "If you use this repository, please cite the associated paper."
 title: "Parameter-Efficient Vision--Language Adaptation for Driver State Recognition via Frozen Feature Alignment"
 authors:
   - family-names: "Tu"

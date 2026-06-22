@@ -1,21 +1,21 @@
-# PACER: Parameter-Efficient CLIP Adaptation for Driver State Recognition
+# Frozen Feature Alignment for Driver State Recognition
 
-This repository contains the reproducibility code for:
+This repository contains the reproducibility code for the paper:
 
 **Parameter-Efficient Vision--Language Adaptation for Driver State Recognition via Frozen Feature Alignment**
 
-PACER adapts a frozen CLIP ViT-B/32 backbone to in-cabin driver monitoring with two lightweight trainable components:
+The code implements a frozen CLIP adaptation framework for in-cabin driver monitoring. The main model keeps both CLIP encoders frozen and trains only two lightweight components:
 
-- a residual image adapter for driver-domain visual features;
+- a residual image adapter that corrects pooled in-cabin visual features;
 - a prompt-calibration head (PCH) with class-specific prompt weighting, class scale, and class bias.
 
-The main experiments use a single in-cabin RGB stream and evaluate:
+The experiments use a single RGB camera stream and evaluate:
 
 - **AIDE**: five-way driver emotion recognition;
 - **YawDD**: binary drowsiness detection under a speaker-independent, video-level protocol.
 
 <p align="center">
-  <img src="paper_assets/fig_arch.png" width="82%" alt="PACER overview">
+  <img src="paper_assets/fig_arch.png" width="82%" alt="Frozen feature alignment framework overview">
 </p>
 
 ## What is included
@@ -29,15 +29,15 @@ docs/                          Dataset layout, protocols, and result tables
 tests/                         Minimal adapter sanity tests
 ```
 
-Large datasets, CLIP weights, feature caches, and checkpoints are intentionally not committed. The scripts write them under local `data/`, `cache/`, `checkpoints/`, and `outputs/` folders.
+Large datasets, CLIP weights, feature caches, and checkpoints are intentionally not committed. The scripts write local artifacts under `data/`, `cache/`, `checkpoints/`, and `outputs/`.
 
 ## Quick start
 
 Create an environment with a CUDA-compatible PyTorch build, then install the remaining dependencies:
 
 ```bash
-git clone https://github.com/Xigua-Liangdao/pacer_v2.git
-cd pacer_v2
+git clone https://github.com/Xigua-Liangdao/pacer_v2.git frozen-feature-alignment-driver-state
+cd frozen-feature-alignment-driver-state
 
 python -m venv .venv
 source .venv/bin/activate
@@ -51,8 +51,10 @@ pip install -r requirements.txt
 Run the lightweight sanity test:
 
 ```bash
-pytest -q
+bash scripts/reproduce/smoke_test.sh
 ```
+
+If `pytest` is installed, the script runs the included tests. Otherwise it falls back to a small adapter identity check so the repository can still be smoke-tested in a minimal environment.
 
 ## Data layout
 
@@ -115,7 +117,7 @@ DEVICE=cuda:0 SEED=42 bash scripts/reproduce/run_yawdd_main.sh
 
 ## Reference results
 
-The paper reports multi-seed results. Exact values depend on the dataset copy, CLIP cache, GPU stack, and deterministic behavior of the local PyTorch/CUDA installation.
+The paper reports multi-seed results. Exact values can vary slightly with the dataset copy, CLIP cache, GPU stack, and deterministic behavior of the local PyTorch/CUDA installation.
 
 | Task | Model | Seeds | Main metric |
 |---|---|---:|---:|
