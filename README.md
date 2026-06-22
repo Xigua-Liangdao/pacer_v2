@@ -129,19 +129,17 @@ For table-ready values and row naming, see [docs/RESULTS.md](docs/RESULTS.md).
 
 ## Figures
 
+The diagrams below are exported from the supplied paper presentation deck, so the README follows the same visual material used for the manuscript rather than regenerated placeholder art.
+
 <p align="center">
-  <img src="paper_assets/fig_pch_detail.png" width="72%" alt="Prompt calibration head">
+  <img src="paper_assets/fig_temporal_aggregation_detail.png" width="82%" alt="Temporal aggregation detail from the paper presentation">
 </p>
 
 <p align="center">
-  <img src="paper_assets/fig_tsne.png" width="78%" alt="t-SNE diagnostic">
+  <img src="paper_assets/fig_pch_detail.png" width="82%" alt="Prompt calibration head detail from the paper presentation">
 </p>
 
-<p align="center">
-  <img src="paper_assets/fig_gradcam_face_selected.png" width="78%" alt="Patch relevance diagnostic">
-</p>
-
-Figure scripts live under `scripts/paper_figures/`. The patch-relevance visualisation is a CLIP patch-token diagnostic, not a supervised Grad-CAM comparison.
+Figure and diagnostic scripts live under `scripts/paper_figures/`; generated analysis plots are not displayed here unless they correspond directly to manuscript figures.
 
 ## Notes for reviewers
 
