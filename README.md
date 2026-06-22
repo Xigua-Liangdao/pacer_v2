@@ -36,7 +36,7 @@ Large datasets, CLIP weights, feature caches, and checkpoints are intentionally 
 Create an environment with a CUDA-compatible PyTorch build, then install the remaining dependencies:
 
 ```bash
-git clone https://github.com/Xigua-Liangdao/pacer_v2.git frozen-feature-alignment-driver-state
+git clone https://github.com/Xigua-Liangdao/Feature_Alignment_for_Driver_State_Recognition.git frozen-feature-alignment-driver-state
 cd frozen-feature-alignment-driver-state
 
 python -m venv .venv
