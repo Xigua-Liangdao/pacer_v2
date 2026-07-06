@@ -54,7 +54,7 @@ AIDE_COLORS = {
     "Anger": "#b94f90",
 }
 YAWDD_LABELS = ["notdrowsy", "drowsy"]
-YAWDD_DISPLAY = {"notdrowsy": "Not-drowsy", "drowsy": "Drowsy"}
+YAWDD_DISPLAY = {"notdrowsy": "non-yawning", "drowsy": "yawning cue"}
 YAWDD_COLORS = {"notdrowsy": "#2f72bd", "drowsy": "#c76f00"}
 
 

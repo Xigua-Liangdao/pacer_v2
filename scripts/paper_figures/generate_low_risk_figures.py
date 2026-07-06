@@ -138,11 +138,11 @@ def fig_seed_stability() -> None:
 
 def aide_ablation_rows() -> list[dict]:
     return [
-        {"dataset": "AIDE", "method": "Full model", "wf1_mean": 0.784, "wf1_std": 0.013, "delta": 0.0, "source": "paper_tables/table2_aide_pch_ablation.tex"},
-        {"dataset": "AIDE", "method": "w/o prompt weight", "wf1_mean": 0.790, "wf1_std": 0.005, "delta": 0.006, "source": "paper_tables/table2_aide_pch_ablation.tex"},
-        {"dataset": "AIDE", "method": "w/o class scale", "wf1_mean": 0.774, "wf1_std": 0.015, "delta": -0.010, "source": "paper_tables/table2_aide_pch_ablation.tex"},
-        {"dataset": "AIDE", "method": "w/o class bias", "wf1_mean": 0.792, "wf1_std": 0.013, "delta": 0.008, "source": "paper_tables/table2_aide_pch_ablation.tex"},
-        {"dataset": "AIDE", "method": "w/o adapter", "wf1_mean": 0.441, "wf1_std": 0.000, "delta": -0.343, "source": "paper_tables/table2_aide_pch_ablation.tex"},
+        {"dataset": "AIDE", "method": "Full framework", "wf1_mean": 0.814, "wf1_std": 0.000, "delta": 0.000, "source": "docs/RESULTS.md"},
+        {"dataset": "AIDE", "method": "Uniform prompt averaging", "wf1_mean": 0.800, "wf1_std": 0.000, "delta": -0.014, "source": "docs/RESULTS.md"},
+        {"dataset": "AIDE", "method": "w/o affine scale", "wf1_mean": 0.762, "wf1_std": 0.000, "delta": -0.052, "source": "docs/RESULTS.md"},
+        {"dataset": "AIDE", "method": "w/o affine bias", "wf1_mean": 0.800, "wf1_std": 0.000, "delta": -0.014, "source": "docs/RESULTS.md"},
+        {"dataset": "AIDE", "method": "w/o residual adapter", "wf1_mean": 0.438, "wf1_std": 0.000, "delta": -0.376, "source": "docs/RESULTS.md"},
     ]
 
 

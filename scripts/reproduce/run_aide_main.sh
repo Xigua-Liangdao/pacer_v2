@@ -27,7 +27,7 @@ cd "$ROOT"
   --strict_frozen_clip on --clip_mode "$CLIP_MODE" --device "$DEVICE" \
   --model_id "$MODEL_ID" \
   --prompt_template "Driver is <LABEL>." --prompt_set driving_7 \
-  --num_frames 5 --epochs "$EPOCHS" --batch_size 32 \
+  --num_frames 3 --epochs "$EPOCHS" --batch_size 32 \
   --lr 1.5e-4 --weight_decay 5e-4 --max_grad_norm 1.0 \
   --adapter_hidden_dim 1024 --adapter_dropout 0.2 \
   --pool_adapter_variant legacy --temporal_module none --adapter_mode full \

@@ -2,7 +2,7 @@
 """YawDD CLIP visual-backbone fine-tuning comparison.
 
 Runs under the locked YawDD B-prime protocol:
-speaker-independent video-level split, split seed 42, T=10 diff-guided frames,
+driver-disjoint video-level split, split seed 42, T=10 diff-guided frames,
 frozen CLIP text side, Adapter + PCH head, and the same result payload helpers
 as the canonical full-model runs.
 """

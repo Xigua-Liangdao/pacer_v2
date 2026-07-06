@@ -2,6 +2,8 @@
 
 The scripts in `scripts/reproduce/` are written as readable command records. They avoid machine-specific absolute paths and can be configured through environment variables.
 
+The paper-facing scripts use the published protocol settings: AIDE uses `T=3` uniformly sampled frames with validation accuracy model selection, and YawDD uses `T=10` difference-guided frames with validation weighted F1 model selection.
+
 Common variables:
 
 ```bash
@@ -30,7 +32,7 @@ Recommended order:
 4. `bash scripts/reproduce/run_yawdd_table3_baselines.sh`
 5. optional: `bash scripts/reproduce/run_yawdd_backbone_finetune.sh`
 
-The full multi-seed run is compute-heavy. For a quick smoke run, set:
+The full multi-seed execution is compute-heavy. For a quick smoke run, set:
 
 ```bash
 EPOCHS=1 MAX_SEQUENCES=64 bash scripts/reproduce/run_aide_main.sh

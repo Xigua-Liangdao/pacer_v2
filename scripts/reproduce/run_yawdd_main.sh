@@ -28,7 +28,7 @@ cd "$ROOT"
   --prompt_template "The driver looks <LABEL>." --prompt_set yawdd_facial_cues \
   --feature_layout pooled --temporal_head none --temporal_module none \
   --pool_adapter_variant legacy \
-  --train_batch_size 64 --extract_batch_size 32 \
+  --train_batch_size 16 --extract_batch_size 32 \
   --weight_decay 1e-2 --max_grad_norm 1.0 \
   --adapter_hidden_dim 512 --adapter_dropout 0.3 --adapter_mode full \
   --adapter_use_prompt_weight on --adapter_use_class_temperature on --adapter_use_class_bias on \

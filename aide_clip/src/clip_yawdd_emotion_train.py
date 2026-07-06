@@ -32,8 +32,8 @@ YAWDD_BEHAVIOR_DISPLAY_MAP = {
     "TalkingYawning": "yawning while talking",
 }
 YAWDD_BINARY_DISPLAY_MAP = {
-    "notdrowsy": "alert and not drowsy",
-    "drowsy": "drowsy and fatigued",
+    "notdrowsy": "non-yawning",
+    "drowsy": "yawning cue",
 }
 
 
@@ -78,18 +78,18 @@ YAWDD_BEHAVIOR_PROMPT_GROUPS = {
 }
 YAWDD_BINARY_PROMPT_GROUPS = {
     "notdrowsy": [
-        "The driver looks alert, awake, and not drowsy.",
-        "The visible behavior suggests the driver is not drowsy.",
-        "This clip shows an attentive driver rather than a fatigued one.",
-        "The person appears awake, focused, and behaviorally normal.",
-        "The facial and behavioral cues indicate an alert driver.",
+        "The driver's mouth remains closed without a visible yawn.",
+        "The visible facial behavior shows a non-yawning driver.",
+        "This clip shows ordinary mouth posture rather than a yawning cue.",
+        "The person appears non-yawning with no wide mouth-opening cue.",
+        "The facial cues indicate the non-yawning class.",
     ],
     "drowsy": [
-        "The driver looks drowsy, fatigued, and sleepy.",
-        "The visible behavior suggests the driver is drowsy.",
-        "This clip shows a fatigued driver rather than an alert one.",
-        "The person appears sleepy with behavioral cues of drowsiness.",
-        "The facial and behavioral cues indicate a drowsy driver.",
+        "The driver's mouth is wide open in a visible yawning cue.",
+        "The visible facial behavior shows a yawning cue.",
+        "This clip shows a yawning cue rather than ordinary mouth posture.",
+        "The person shows a wide mouth-opening cue associated with yawning.",
+        "The facial cues indicate the yawning-cue class.",
     ],
 }
 
@@ -805,7 +805,7 @@ def collect_preprocessed_face_sequence_samples(
         for stem, frame_paths in sorted(grouped.items()):
             subject_id = stem.split("-", 1)[0]
             binary_label = "drowsy" if label_by_stem[stem] == "1" else "notdrowsy"
-            behavior_label = "yawning" if binary_label == "drowsy" else "normal"
+            behavior_label = "yawning cue" if binary_label == "drowsy" else "non-yawning"
             samples.append(
                 {
                     "sequence_id": f"{source_split}::{stem}",

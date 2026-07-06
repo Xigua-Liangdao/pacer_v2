@@ -1,21 +1,19 @@
-# Frozen Feature Alignment for Driver State Recognition
+# Parameter-Efficient Vision--Language Adaptation for Driver State Recognition via Frozen Feature Alignment
 
-This repository contains the reproducibility code for the paper:
+Frozen Feature Alignment for Driver State Recognition.
 
-**Parameter-Efficient Vision--Language Adaptation for Driver State Recognition via Frozen Feature Alignment**
+This repository contains reproducibility code and paper-facing assets for the proposed frozen-VLM adaptation framework. The main model adapts a frozen CLIP ViT-B/32 backbone to in-cabin driver monitoring with two lightweight trainable components:
 
-The code implements a frozen CLIP adaptation framework for in-cabin driver monitoring. The main model keeps both CLIP encoders frozen and trains only two lightweight components:
-
-- a residual image adapter that corrects pooled in-cabin visual features;
+- a residual image adapter for driver-domain visual features;
 - a prompt-calibration head (PCH) with class-specific prompt weighting, class scale, and class bias.
 
-The experiments use a single RGB camera stream and evaluate:
+The main experiments use a single in-cabin RGB stream and evaluate:
 
-- **AIDE**: five-way driver emotion recognition;
-- **YawDD**: binary drowsiness detection under a speaker-independent, video-level protocol.
+- **AIDE**: five-way driver affective-state recognition under the published video-level protocol;
+- **YawDD**: binary yawning-based drowsiness-cue detection under a driver-disjoint video-level protocol.
 
 <p align="center">
-  <img src="paper_assets/fig_arch.png" width="82%" alt="Frozen feature alignment framework overview">
+  <img src="paper_assets/fig_arch.png" width="82%" alt="Frozen CLIP adaptation framework for driver state recognition">
 </p>
 
 ## What is included
@@ -29,15 +27,15 @@ docs/                          Dataset layout, protocols, and result tables
 tests/                         Minimal adapter sanity tests
 ```
 
-Large datasets, CLIP weights, feature caches, and checkpoints are intentionally not committed. The scripts write local artifacts under `data/`, `cache/`, `checkpoints/`, and `outputs/`.
+Large datasets, CLIP weights, feature caches, and checkpoints are intentionally not committed. The scripts write them under local `data/`, `cache/`, `checkpoints/`, and `outputs/` folders.
 
 ## Quick start
 
 Create an environment with a CUDA-compatible PyTorch build, then install the remaining dependencies:
 
 ```bash
-git clone https://github.com/Xigua-Liangdao/Feature_Alignment_for_Driver_State_Recognition.git frozen-feature-alignment-driver-state
-cd frozen-feature-alignment-driver-state
+git clone https://github.com/Xigua-Liangdao/FA4DSR.git
+cd FA4DSR
 
 python -m venv .venv
 source .venv/bin/activate
@@ -51,10 +49,8 @@ pip install -r requirements.txt
 Run the lightweight sanity test:
 
 ```bash
-bash scripts/reproduce/smoke_test.sh
+pytest -q
 ```
-
-If `pytest` is installed, the script runs the included tests. Otherwise it falls back to a small adapter identity check so the repository can still be smoke-tested in a minimal environment.
 
 ## Data layout
 
@@ -117,37 +113,43 @@ DEVICE=cuda:0 SEED=42 bash scripts/reproduce/run_yawdd_main.sh
 
 ## Reference results
 
-The paper reports multi-seed results. Exact values can vary slightly with the dataset copy, CLIP cache, GPU stack, and deterministic behavior of the local PyTorch/CUDA installation.
+The paper-facing main model is **Frozen CLIP + Adapter + PCH**. Exact local executions may vary with the dataset copy, CLIP cache, GPU stack, and deterministic behavior of the local PyTorch/CUDA installation.
 
-| Task | Model | Seeds | Main metric |
-|---|---|---:|---:|
-| AIDE emotion recognition | Frozen CLIP + Adapter + PCH | 9 | WF1 0.784 ± 0.013 |
-| YawDD drowsiness detection | Frozen CLIP + Adapter + PCH | 5 | WF1 0.801 ± 0.039 |
-| YawDD partial visual fine-tuning | last 2 ViT blocks + Adapter + PCH | 3 | WF1 0.874 ± 0.054 |
+| Task | Model | Protocol | Main metrics |
+|---|---|---|---|
+| AIDE five-way driver affective-state recognition | Frozen CLIP + Adapter + PCH | single in-cabin RGB, `T=3` uniform frames | Acc 82.50, WF1 81.40, Macro-F1 73.57 |
+| YawDD binary yawning-based drowsiness-cue detection | Frozen CLIP + Adapter + PCH | driver-disjoint, `T=10` difference-guided frames | Best Acc 0.839, Best W-F1 0.840, Y-F1 0.711 ± 0.058 |
 
 For table-ready values and row naming, see [docs/RESULTS.md](docs/RESULTS.md).
 
 ## Figures
 
-The diagrams below are rendered from the supplied paper presentation deck after converting it to PDF. The README therefore uses the same visual material as the manuscript deck rather than regenerated placeholder art. The source PDF is kept at `paper_assets/source_paper_deck.pdf`.
+The latest method figures are stored as PDF assets under [paper_assets/](paper_assets/) with PNG previews for GitHub rendering.
 
 <p align="center">
-  <img src="paper_assets/fig_temporal_aggregation_detail.png" width="82%" alt="Temporal aggregation detail from the paper presentation">
+  <img src="paper_assets/fig_arch.png" width="82%" alt="Main framework overview for Frozen CLIP plus Adapter plus PCH">
 </p>
 
 <p align="center">
-  <img src="paper_assets/fig_pch_detail.png" width="82%" alt="Prompt calibration head detail from the paper presentation">
+  <img src="paper_assets/fig_pch_detail.png" width="72%" alt="Prompt-calibration head detail">
 </p>
 
-Figure and diagnostic scripts live under `scripts/paper_figures/`; generated analysis plots are not displayed here unless they correspond directly to manuscript figures.
+<p align="center">
+  <img src="paper_assets/fig_temporal_detail.png" width="72%" alt="Temporal aggregation detail for mean pooling, cross-frame gating, and temporal attention">
+</p>
+
+PDF sources: [framework overview](paper_assets/fig_arch.pdf), [PCH detail](paper_assets/fig_pch_detail.pdf), and [temporal detail](paper_assets/fig_temporal_detail.pdf).
+
+CGP-FG corresponds to the cross-frame gating path; TAGA corresponds to the temporal-attention path; GeM/mean pooling denotes the pooling family. Paper tables report the canonical names mean pooling, cross-frame gating, and temporal attention.
 
 ## Notes for reviewers
 
 - The CLIP image and text encoders are frozen in the main model.
-- PCH prompt weight, class scale, and class bias are enabled by default in the main experiments.
-- YawDD uses a speaker-independent video-level split and a difference-guided frame sampler.
-- The ResNet-50 sanity experiment discussed during development is not part of the main comparison table.
-- No dataset files or pretrained checkpoints are redistributed in this repository.
+- PCH prompt weighting, class scale, and class bias are enabled in the main model.
+- AIDE uses `T=3` uniform frames.
+- YawDD uses `T=10` difference-guided frames.
+- YawDD is treated as a yawning-based drowsiness-related vigilance-cue benchmark, not as a full physiological drowsiness-label dataset.
+- No datasets, pretrained weights, feature caches, or checkpoints are redistributed.
 
 ## Citation
 

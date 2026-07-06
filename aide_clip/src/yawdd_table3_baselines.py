@@ -3,7 +3,7 @@
 
 This file is intentionally separate from clip_yawdd_emotion_train.py so the
 locked full-model path stays untouched. It reuses the same YawDD collection,
-speaker-independent split, frozen-CLIP feature cache, metrics, and result JSON
+driver-disjoint split, frozen-CLIP feature cache, metrics, and result JSON
 payload helpers as the canonical B-prime runs.
 """
 

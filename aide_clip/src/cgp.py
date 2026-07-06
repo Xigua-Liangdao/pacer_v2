@@ -20,7 +20,7 @@ than TAGA's 2-layer transformer. The design philosophy is *minimal added
 capacity, all directly justified by the data's properties*.
 
 Why this fits AIDE:
-- N=5 frames have little extractable temporal structure, so attention
+- Short uniformly sampled AIDE clips have little extractable temporal structure, so attention
   over-parameterizes and overfits. CGP-FG does NOT model frame-frame
   relations, only frame importance.
 - The per-channel pooling exponent lets the model decide WHICH features
